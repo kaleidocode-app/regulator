@@ -3,45 +3,46 @@ figma.showUI(__html__, { width: 400, height: 280 });
 let ref = []
 
 figma.getLocalPaintStyles().forEach(style => {
-  let node = <SolidPaint>style.paints[0]
-  let colors = node.color
-  let hex = findTheHEX(colors.r, colors.g, colors.b)
+	let node = <SolidPaint>style.paints[0]
+	let colors = node.color
+	let hex = findTheHEX(colors.r, colors.g, colors.b)
 
-  ref.push({
-    id: style.id,
-    name: style.name,
-    color: hex
-  })
+	ref.push({
+		id: style.id,
+		name: style.name,
+		color: hex
+	})
 })
 
 figma.ui.postMessage({ type: 'loadStyles', styles: [ref] })
 
 figma.ui.onmessage = async msg => {
 
-  if (msg.type === "rename-styles") {
-    msg.styles.forEach(s => {
-      console.log(s.name)
-      figma.getStyleById(s.style).name = s.name
-    })
-  }
+	if (msg.type === "rename-styles") {
+		msg.styles.forEach(s => {
+			figma.getStyleById(s.style).name = s.name
+		})
+	}
 
-  figma.closePlugin()
+	if (msg.type === "no-styles"){
+		figma.notify('Please select styles to rename')
+	}
 
 }
 
 function findTheHEX(red: number, green: number, blue: number) {
-  var redHEX = rgbToHex(red)
-  var greenHEX = rgbToHex(green)
-  var blueHEX = rgbToHex(blue)
+	var redHEX = rgbToHex(red)
+	var greenHEX = rgbToHex(green)
+	var blueHEX = rgbToHex(blue)
 
-  return redHEX + greenHEX + blueHEX
+	return redHEX + greenHEX + blueHEX
 }
 
 function rgbToHex(rgb: any) {
-  rgb = Math.floor(rgb * 255)
-  var hex = Number(rgb).toString(16)
-  if (hex.length < 2) {
-    hex = '0' + hex
-  }
-  return hex
+	rgb = Math.floor(rgb * 255)
+	var hex = Number(rgb).toString(16)
+	if (hex.length < 2) {
+		hex = '0' + hex
+	}
+	return hex
 }

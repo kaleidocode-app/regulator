@@ -52,6 +52,12 @@ li {
   padding: 4px var(--padding);
   line-height: 22px;
   text-decoration: none;
+  -webkit-touch-callout: none;
+    -webkit-user-select: none;
+     -khtml-user-select: none;
+       -moz-user-select: none;
+        -ms-user-select: none;
+            user-select: none;
 }
 
 li:hover {
@@ -72,6 +78,11 @@ button {
   box-sizing: border-box;
   border: none;
   border-radius: 6px;
+}
+
+button.disabled {
+  opacity: .4;
+  pointer-events: none;
 }
 
 .color {
@@ -107,3 +118,9 @@ li.checked .checkbox {
   border: 1px solid #18a0fb;
   background: #18a0fb url(../src/images/check.svg) center no-repeat;
 }
+
+.foo {
+  -webkit-mask: initial;
+}
+
+.bar {}
