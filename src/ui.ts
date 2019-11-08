@@ -70,6 +70,7 @@ function clearStyleNames(){
 		let text = items[index].querySelector('.name')
 		text.innerHTML = originalName
 		items[index].classList.toggle('rename')
+		updateStyleNames()
 	}
 
 }
