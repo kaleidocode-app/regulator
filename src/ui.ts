@@ -11,6 +11,10 @@ onmessage = (event) => {
 
 	if (pluginMessage.type == 'loadStyles') {
 
+		console.log('loading styles...')
+
+		console.log(pluginMessage.styles[0])
+
 		let counter = pluginMessage.styles[0].length
 		
 

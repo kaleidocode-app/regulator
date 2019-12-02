@@ -1,11 +1,19 @@
 figma.showUI(__html__, { width: 400, height: 280 });
 
 let ref = []
+let colors
+let hex
 
 figma.getLocalPaintStyles().forEach(style => {
 	let node = <SolidPaint>style.paints[0]
-	let colors = node.color
-	let hex = findTheHEX(colors.r, colors.g, colors.b)
+
+	if(node.color){
+		colors = node.color
+		hex = findTheHEX(colors.r, colors.g, colors.b)
+	} else {
+		hex = 'f8f8f8'
+	}
+	
 
 	ref.push({
 		id: style.id,
