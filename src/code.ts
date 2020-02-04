@@ -1,4 +1,4 @@
-figma.showUI(__html__, { width: 400, height: 280 });
+figma.showUI(__html__, { width: 400, height: 312 });
 
 let ref = []
 let colors

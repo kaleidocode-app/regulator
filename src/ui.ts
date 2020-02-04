@@ -2,6 +2,7 @@ import './ui.css'
 
 const container = document.getElementById("styles")
 let renameInput = <HTMLInputElement>document.getElementById('renameInput')
+let matchInput = <HTMLInputElement>document.getElementById('renameMatch')
 let numerate = 1
 
 onmessage = (event) => {
@@ -12,7 +13,6 @@ onmessage = (event) => {
 	if (pluginMessage.type == 'loadStyles') {
 
 		console.log('loading styles...')
-
 		console.log(pluginMessage.styles[0])
 
 		let counter = pluginMessage.styles[0].length
@@ -45,21 +45,41 @@ function updateStyleNames(){
 	let items = document.getElementsByClassName('checked')
 	for (let index = 0; index < items.length; index++) {
 
-		let renameText
-
+		let renameText: string
 		let text = items[index].querySelector('.name')
-		if (renameInput.value.includes('$nn')) {
-			renameText = renameInput.value.replace('$nn', pad(Number(index)+1, 2))
+		let originalName = text.getAttribute('data-name')
+		
+		// match
+		if(matchInput.value.length > 0) {
+			let matchName = matchInput.value;
+			let matchNameAllInstance = new RegExp(matchName,"g");
+			renameText = originalName.replace(matchNameAllInstance, renameInput.value)
 		}
-		else if (renameInput.value.includes('$n')) {
-			renameText = renameInput.value.replace('$n', pad(Number(index+1), 1))
-		} else if (renameInput.value.includes('$')) {
-			renameText = renameInput.value.replace('$', '')
-		} else {
+		
+		// when match is empty
+		if(renameInput.value.length > 0 && matchInput.value.length == 0) {
 			renameText = renameInput.value
 		}
-		if (renameInput.value.length > 0) {
+
+		// numerator
+		if(renameInput.value.includes('$')){
+			if (renameInput.value.includes('$nn')) {
+				renameText = renameText.replace(/\$nn/g, pad(Number(index)+1, 2))
+			} else if (renameInput.value.includes('$n')) {
+				renameText = renameText.replace(/\$n/g, pad(Number(index+1), 1))
+			} else if (renameInput.value.includes('$')) {
+				renameText = renameText.replace(/\$/g, '')
+			}
+		}
+
+		// match & replace
+		if (renameInput.value.length > 0 || matchInput.value.length > 0) {
 			text.innerHTML = renameText
+		}
+
+		// reset
+		if (renameInput.value.length == 0 && matchInput.value.length == 0){
+			text.innerHTML = originalName
 		}
 
 	}
@@ -131,6 +151,7 @@ function startListening() {
 			parent.postMessage({ pluginMessage: { type: 'rename-styles', styles: rename } }, '*')
 
 			renameInput.value = ""
+			matchInput.value = ""
 			renameInput.focus()
 			checkInputValue()
 			e.preventDefault()

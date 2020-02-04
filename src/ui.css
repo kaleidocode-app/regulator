@@ -10,7 +10,7 @@ html,
 body {
   height: 100%;
   font-size: 16px;
-  padding: 4px 0;
+  padding-top: 4px;
   overflow: hidden;
 }
 
@@ -41,7 +41,7 @@ ul {
   list-style: none;
   width: 100%;
   padding: 0;
-  height: calc(100% - 80px);
+  height: calc(100% - 116px);
   overflow: scroll;
 }
 
@@ -118,9 +118,3 @@ li.checked .checkbox {
   border: 1px solid #18a0fb;
   background: #18a0fb url(../src/images/check.svg) center no-repeat;
 }
-
-.foo {
-  -webkit-mask: initial;
-}
-
-.bar {}
