@@ -67,6 +67,8 @@ function updateStyleNames(){
 				renameText = renameText.replace(/\$nn/g, pad(Number(index)+1, 2))
 			} else if (renameInput.value.includes('$n')) {
 				renameText = renameText.replace(/\$n/g, pad(Number(index+1), 1))
+			} else if (renameInput.value.includes('$&')){
+				renameText = renameText.replace(/\$&/g, originalName)
 			} else if (renameInput.value.includes('$')) {
 				renameText = renameText.replace(/\$/g, '')
 			}
