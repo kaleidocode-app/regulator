@@ -23,13 +23,25 @@ onmessage = (event) => {
 			let name = style.name
 			let styleId = style.id
 			let color = style.color
+			let newItem: string
 
-			let newItem = `
+			if(color === false){
+				newItem = `
+				<li data-id="${styleId}" class="style-item">
+					<div class="checkbox"></div>
+					<div class="text">Ag</div>
+					<div class="name" data-name="${name}">${name}</div>
+				</li>`
+			} else {
+				newItem = `
 				<li data-id="${styleId}" class="style-item">
 					<div class="checkbox"></div>
 					<div class="color" style="background-color: #${color};"></div>
 					<div class="name" data-name="${name}">${name}</div>
 				</li>`
+			}
+
+			
 			container.innerHTML += newItem;
 			if ((index + 1) === counter) {
 				startListening()

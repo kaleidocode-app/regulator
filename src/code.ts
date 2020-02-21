@@ -5,6 +5,7 @@ let colors
 let hex
 
 figma.getLocalPaintStyles().forEach(style => {
+
 	let node = <SolidPaint>style.paints[0]
 
 	if(node.color){
@@ -19,6 +20,15 @@ figma.getLocalPaintStyles().forEach(style => {
 		id: style.id,
 		name: style.name,
 		color: hex
+	})
+})
+
+figma.getLocalTextStyles().forEach(style => {
+	ref.push({
+		id: style.id,
+		name: style.name,
+		color: false,
+		font: style.fontName.family
 	})
 })
 
