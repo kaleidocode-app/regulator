@@ -62,7 +62,7 @@ function updateStyleNames(){
 		let originalName = text.getAttribute('data-name')
 		
 		// match
-		if(matchInput.value.length > 0) {
+		if(matchInput.value.length > 0 || renameInput.value.length > 0) {
 			let matchName = matchInput.value;
 			let matchNameAllInstance = new RegExp(matchName,"g");
 			renameText = originalName.replace(matchNameAllInstance, renameInput.value)
@@ -145,7 +145,7 @@ function startListening() {
 			renameInput.focus()
 			parent.postMessage({ pluginMessage: { type: 'no-styles' } }, '*')
 	
-		} else if(renameInput.value.length > 0){
+		} else if(renameInput.value.length > 0 || matchInput.value.length > 0){
 			let rename = []
 
 			let checked = document.querySelectorAll('.checked')
@@ -184,7 +184,7 @@ function pad(n:any, width:any, z?:any) {
 }
 
 function checkInputValue(){
-	if (renameInput.value.length > 0) {
+	if (renameInput.value.length > 0 || matchInput.value.length > 0) {
 		document.getElementById('renameButton').classList.remove('disabled')
 	} else {
 		document.getElementById('renameButton').classList.add('disabled')
