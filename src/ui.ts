@@ -3,6 +3,7 @@ import './ui.css'
 const container = document.getElementById("styles")
 let renameInput = <HTMLInputElement>document.getElementById('renameInput')
 let matchInput = <HTMLInputElement>document.getElementById('renameMatch')
+let selectAll = <HTMLInputElement>document.getElementById('selectAll')
 let numerate = 1
 
 onmessage = (event) => {
@@ -45,6 +46,7 @@ onmessage = (event) => {
 			container.innerHTML += newItem;
 			if ((index + 1) === counter) {
 				startListening()
+				document.getElementById('selectAll').click()
 			}
 		})
 
@@ -60,40 +62,43 @@ function updateStyleNames(){
 		let renameText: string
 		let text = items[index].querySelector('.name')
 		let originalName = text.getAttribute('data-name')
-		
-		// match
-		if(matchInput.value.length > 0 || renameInput.value.length > 0) {
-			let matchName = matchInput.value;
-			let matchNameAllInstance = new RegExp(matchName,"g");
-			renameText = originalName.replace(matchNameAllInstance, renameInput.value)
-		}
-		
-		// when match is empty
-		if(renameInput.value.length > 0 && matchInput.value.length == 0) {
-			renameText = renameInput.value
-		}
 
-		// numerator
-		if(renameInput.value.includes('$')){
-			if (renameInput.value.includes('$nn')) {
-				renameText = renameText.replace(/\$nn/g, pad(Number(index)+1, 2))
-			} else if (renameInput.value.includes('$n')) {
-				renameText = renameText.replace(/\$n/g, pad(Number(index+1), 1))
-			} else if (renameInput.value.includes('$&')){
-				renameText = renameText.replace(/\$&/g, originalName)
-			} else if (renameInput.value.includes('$')) {
-				renameText = renameText.replace(/\$/g, '')
+		if(items[index].getAttribute('id') !== 'selectAll'){
+
+			// match
+			if(matchInput.value.length > 0 || renameInput.value.length > 0) {
+				let matchName = matchInput.value;
+				let matchNameAllInstance = new RegExp(matchName,"g");
+				renameText = originalName.replace(matchNameAllInstance, renameInput.value)
 			}
-		}
+			
+			// when match is empty
+			if(renameInput.value.length > 0 && matchInput.value.length == 0) {
+				renameText = renameInput.value
+			}
 
-		// match & replace
-		if (renameInput.value.length > 0 || matchInput.value.length > 0) {
-			text.innerHTML = renameText
-		}
+			// numerator
+			if(renameInput.value.includes('$')){
+				if (renameInput.value.includes('$nn')) {
+					renameText = renameText.replace(/\$nn/g, pad(Number(index)+1, 2))
+				} else if (renameInput.value.includes('$n')) {
+					renameText = renameText.replace(/\$n/g, pad(Number(index+1), 1))
+				} else if (renameInput.value.includes('$&')){
+					renameText = renameText.replace(/\$&/g, originalName)
+				} else if (renameInput.value.includes('$')) {
+					renameText = renameText.replace(/\$/g, '')
+				}
+			}
 
-		// reset
-		if (renameInput.value.length == 0 && matchInput.value.length == 0){
-			text.innerHTML = originalName
+			// match & replace
+			if (renameInput.value.length > 0 || matchInput.value.length > 0) {
+				text.innerHTML = renameText
+			}
+
+			// reset
+			if (renameInput.value.length == 0 && matchInput.value.length == 0){
+				text.innerHTML = originalName
+			}
 		}
 
 	}
@@ -104,11 +109,13 @@ function clearStyleNames(){
 
 	let items = document.getElementsByClassName('rename')
 	for (let index = 0; index < items.length; index++) {
-		let originalName = items[index].querySelector('.name').getAttribute('data-name')
-		let text = items[index].querySelector('.name')
-		text.innerHTML = originalName
-		items[index].classList.toggle('rename')
-		updateStyleNames()
+		if(items[index].getAttribute('id') !== 'selectAll'){
+			let originalName = items[index].querySelector('.name').getAttribute('data-name')
+			let text = items[index].querySelector('.name')
+			text.innerHTML = originalName
+			items[index].classList.toggle('rename')
+			updateStyleNames()
+		}
 	}
 
 }
@@ -126,29 +133,46 @@ function startListening() {
 	document.getElementById("styles").addEventListener('click', function (e) {
 		let target = <HTMLElement>e.target
 		target.classList.toggle('checked')
-		
 
 		if(!target.classList.contains('checked')){
+			if(target.getAttribute('id') !== 'selectAll'){ selectAll.classList.remove('checked') }
 			target.classList.toggle('rename')
 			clearStyleNames()
 		} else {
 			updateStyleNames()	
 		}
-
 		
+		// select all
+		if(target.getAttribute('id') === 'selectAll'){
+			let items = document.querySelectorAll('.style-item:not(#selectAll)')
+			let state = target.classList.contains('checked')
+			
+			items.forEach(c => {
+				if(state === true){
+					if(!c.classList.contains('checked')) {
+						c.classList.add('checked')
+					}	
+				} else {
+					c.classList.remove('checked')
+				}
+				
+			})
+		}
 		
 	});
 
 	document.getElementById('renameButton').addEventListener('click', function(e){
+
+		console.log(selectAll.classList.contains('checked'))
 		
-		if (document.querySelectorAll('.checked').length === 0) {
+		if (document.querySelectorAll('.checked:not(#selectAll)').length === 0) {
 			renameInput.focus()
 			parent.postMessage({ pluginMessage: { type: 'no-styles' } }, '*')
 	
 		} else if(renameInput.value.length > 0 || matchInput.value.length > 0){
 			let rename = []
 
-			let checked = document.querySelectorAll('.checked')
+			let checked = document.querySelectorAll('.checked:not(#selectAll)')
 			checked.forEach((c, index) => {
 				let styleId = c.getAttribute('data-id')
 				let styleName = c.querySelector('.name').innerHTML
@@ -162,8 +186,11 @@ function startListening() {
 				c.classList.toggle('checked')
 			})
 
+			console.log(selectAll.classList.contains('checked'))
+
 			parent.postMessage({ pluginMessage: { type: 'rename-styles', styles: rename } }, '*')
 
+			// reset
 			renameInput.value = ""
 			matchInput.value = ""
 			renameInput.focus()
@@ -191,4 +218,4 @@ function checkInputValue(){
 	}
 }
 
-renameInput.focus()
+matchInput.focus()
