@@ -41,8 +41,15 @@ ul {
   list-style: none;
   width: 100%;
   padding: 0;
-  height: calc(100% - 116px);
   overflow: scroll;
+}
+
+ul#styles {
+  height: calc(100% - 194px);
+}
+
+ul#masterSwitch {
+  margin-bottom: 0;
 }
 
 li {
@@ -78,6 +85,23 @@ button {
   box-sizing: border-box;
   border: none;
   border-radius: 6px;
+}
+
+#buttons {
+  margin: 4px 0 8px var(--padding);
+}
+
+button.secondary {
+  color: #333;
+  margin: 0 8px 0 0;
+  background-color: transparent;
+  border: 1px solid rgba(0,0,0,.8)
+}
+
+button.secondary:active,
+button.secondary:focus {
+  outline: none;
+  border-color: #18a0fb;
 }
 
 button.disabled {
@@ -121,7 +145,8 @@ li:hover .checkbox {
   visibility: visible;
 }
 
-li.checked .checkbox {
+li.checked .checkbox,
+li.on .checkbox {
   visibility: visible;
   border: 1px solid #18a0fb;
   background: #18a0fb url(../src/images/check.svg) center no-repeat;

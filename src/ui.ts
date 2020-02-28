@@ -3,7 +3,9 @@ import './ui.css'
 const container = document.getElementById("styles")
 let renameInput = <HTMLInputElement>document.getElementById('renameInput')
 let matchInput = <HTMLInputElement>document.getElementById('renameMatch')
-let numerate = 1
+let masterSwitch = <HTMLInputElement>document.getElementById('masterSwitch')
+let switchItem = <HTMLElement>document.getElementById('switch')
+let styleCount:number
 
 onmessage = (event) => {
 
@@ -13,7 +15,6 @@ onmessage = (event) => {
 	if (pluginMessage.type == 'loadStyles') {
 
 		console.log('loading styles...')
-		console.log(pluginMessage.styles[0])
 
 		let counter = pluginMessage.styles[0].length
 		
@@ -45,6 +46,7 @@ onmessage = (event) => {
 			container.innerHTML += newItem;
 			if ((index + 1) === counter) {
 				startListening()
+				masterSwitch.click()
 			}
 		})
 
@@ -97,6 +99,8 @@ function updateStyleNames(){
 		}
 
 	}
+
+	updateStyleCount()
 	
 }
 
@@ -111,6 +115,56 @@ function clearStyleNames(){
 		updateStyleNames()
 	}
 
+}
+
+function toggleAll(){
+	switchItem.classList.toggle('on')
+
+	document.querySelectorAll('.style-item').forEach(s => {
+		let item = <HTMLElement>s
+		item.classList.toggle('checked')
+
+		if(switchItem.classList.contains('on') && !item.classList.contains('checked')){
+			// toggle on only if item is not already on
+			item.classList.toggle('checked')
+		} else if(!switchItem.classList.contains('on') && item.classList.contains('checked')) {
+			// toggle off only if item is not already off
+			item.classList.toggle('checked')
+		}
+
+		if(!item.classList.contains('checked')){
+			item.classList.toggle('rename')
+			clearStyleNames()
+		} else {
+			updateStyleNames()	
+		}
+
+	});
+}
+
+function updateStyleCount(state?: string){
+	if (renameInput.value.length > 0 || matchInput.value.length > 0) {
+		console.log('updating style count')
+		let buttton = document.getElementById('renameButton')
+
+		styleCount = 0
+
+		document.querySelectorAll('.checked').forEach(c =>{
+			let name = c.querySelector('.name')
+			if(name.getAttribute('data-name') !== name.innerHTML){
+				styleCount++
+			}
+		})
+
+		if(styleCount > 0){
+			buttton.innerText = `Rename ${styleCount} Styles`
+		} else {
+			buttton.innerText = `Rename Styles`
+		}
+	} else if(state == 'clear'){
+		console.log('clearing')
+		document.getElementById('renameButton').innerText = `Rename Styles`
+	}
 }
 
 document.addEventListener('keyup', function (e) {
@@ -135,8 +189,26 @@ function startListening() {
 			updateStyleNames()	
 		}
 
+		updateStyleCount()
 		
-		
+	});
+
+	document.getElementById("masterSwitch").addEventListener('click', function (e) {
+		toggleAll()
+	});
+
+	document.getElementById('shortcutName').addEventListener('click', function(e){
+		let currentText = renameInput.value
+		renameInput.value = currentText + '$&'
+		updateStyleNames()
+		e.preventDefault()
+	});
+
+	document.getElementById('shortcutNumber').addEventListener('click', function(e){
+		let currentText = renameInput.value
+		renameInput.value = currentText + '$nn'
+		updateStyleNames()
+		e.preventDefault()
 	});
 
 	document.getElementById('renameButton').addEventListener('click', function(e){
@@ -159,15 +231,22 @@ function startListening() {
 				
 				let name = c.querySelector('.name')
 				name.setAttribute('data-name', name.innerHTML)
-				c.classList.toggle('checked')
+
+				// reset
+				if(!switchItem.classList.contains('on')){
+					// toggle on only if item is not already on
+					c.classList.toggle('checked')
+				}
+
 			})
 
 			parent.postMessage({ pluginMessage: { type: 'rename-styles', styles: rename } }, '*')
 
 			renameInput.value = ""
 			matchInput.value = ""
-			renameInput.focus()
+			matchInput.focus()
 			checkInputValue()
+			updateStyleCount('clear')
 			e.preventDefault()
 		} 
 		
@@ -187,8 +266,9 @@ function checkInputValue(){
 	if (renameInput.value.length > 0 || matchInput.value.length > 0) {
 		document.getElementById('renameButton').classList.remove('disabled')
 	} else {
+		updateStyleCount('clear')
 		document.getElementById('renameButton').classList.add('disabled')
 	}
 }
 
-renameInput.focus()
+matchInput.focus()
