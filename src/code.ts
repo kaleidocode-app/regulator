@@ -4,17 +4,21 @@ let ref = []
 let colors
 let hex
 
+console.log('getting local color styles')
 figma.getLocalPaintStyles().forEach(style => {
 
 	let node = <SolidPaint>style.paints[0]
 
-	if(node.color){
-		colors = node.color
-		hex = findTheHEX(colors.r, colors.g, colors.b)
+	if(node){
+		if(node.color && node !== undefined){
+			colors = node.color
+			hex = findTheHEX(colors.r, colors.g, colors.b)
+		} else {
+			hex = 'f8f8f8'
+		}
 	} else {
-		hex = 'f8f8f8'
+		hex = 'transparent'
 	}
-	
 
 	ref.push({
 		id: style.id,
@@ -23,6 +27,7 @@ figma.getLocalPaintStyles().forEach(style => {
 	})
 })
 
+console.log('getting local text styles')
 figma.getLocalTextStyles().forEach(style => {
 	ref.push({
 		id: style.id,

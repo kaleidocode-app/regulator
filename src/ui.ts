@@ -33,6 +33,13 @@ onmessage = (event) => {
 					<div class="text">Ag</div>
 					<div class="name" data-name="${name}">${name}</div>
 				</li>`
+			} else if(color === 'transparent'){
+				newItem = `
+				<li data-id="${styleId}" class="style-item">
+					<div class="checkbox"></div>
+					<div class="color transparent"></div>
+					<div class="name" data-name="${name}">${name}</div>
+				</li>`
 			} else {
 				newItem = `
 				<li data-id="${styleId}" class="style-item">
